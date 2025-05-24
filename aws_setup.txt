@@ -1,0 +1,46 @@
+AWS CICD Deployment with GitHub Actions
+
+1. Login to AWS console.
+
+2. Create IAM user for deployment
+With specific access:
+- EC2 access: Virtual machine
+- ECR: Elastic Container Registry to save your Docker image in AWS
+
+Description: About the deployment
+i. Build Docker image of the source code
+ii. Push your Docker image to ECR
+iii. Launch your EC2 
+iv. Pull your image from ECR in EC2
+v. Launch your Docker image in EC2
+
+Policy:
+- AmazonEC2ContainerRegistryFullAccess
+- AmazonEC2FullAccess
+
+3. Create ECR repo to store/save Docker image
+- Save the URI: 
+
+4. Create EC2 machine (Ubuntu)
+
+5. Open EC2 and Install Docker in EC2 Machine
+
+Optional:
+sudo apt-get update -y
+sudo apt-get upgrade
+
+Required:
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+sudo usermod -aG docker ubuntu
+newgrp docker
+
+6. Configure EC2 as self-hosted runner
+Go to: Settings > Actions > Runner > New self-hosted runner > Choose OS > Run commands one by one
+
+7. Setup GitHub secrets
+AWS_ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
+AWS_REGION=
+AWS_ECR_LOGIN_URI=
+ECR_REPOSITORY_NAME=
