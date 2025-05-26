@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Object Classification • Demo</title>
+
+  <!-- Inter font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind (via CDN) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        fontFamily: { sans: ['Inter', 'sans-serif'] },
+        extend: {
+          colors: {
+            primary:  '#4e6cff',
+            'primary-10': '#ebefff',
+          },
+          boxShadow: {
+            card: '0 6px 18px rgba(0,0,0,.06)',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* --- custom CSS (unchanged logic) ------------------ */
+    html,body{height:100%;}
+    .image-wrapper{height:300px;width:300px}
+    #video,#photo{object-fit:cover;height:100%;width:100%;}
+    #photo{display:none}
+    .resp-img{width:100%;max-height:298px;object-fit:contain;border-radius:.4rem}
+    .result-box{height:310px;overflow:auto}
+    /* Loader */
+    #loading{position:fixed;inset:0;display:grid;place-items:center;
+      background:rgba(255,255,255,.7);z-index:9999;backdrop-filter:blur(2px);
+      transition:opacity .4s ease}
+    #loading.hidden{opacity:0;pointer-events:none}
+    .loader{width:64px;height:64px;border-radius:50%;border:8px solid var(--tw-color-primary-10,#ebefff);
+      border-top-color:var(--tw-color-primary,#4e6cff);animation:spin 1s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    /* Fade-up entrance */
+    [data-fade]{opacity:0;transform:translateY(20px);animation:fadeUp .6s var(--delay,0s) forwards}
+    @keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
+  </style>
+</head>
+<body class="bg-[#f6f8fc] font-sans text-gray-800">
+  <!-- Loader -->
+  <div id="loading"><div class="loader"></div></div>
+
+  <main class="max-w-screen-lg mx-auto px-4 py-16">
+    <!-- heading -->
+    <header class="text-center mb-10" data-fade style="--delay:.1s">
+      <h1 class="text-2xl sm:text-3xl font-bold text-[#1b2d6b]">
+        Object Classification Demo
+      </h1>
+      <p class="text-gray-500 mt-2">
+        Upload an image or capture a frame, then click <strong>Predict</strong>.
+      </p>
+    </header>
+
+    <section class="grid gap-8 lg:grid-cols-2 items-start">
+      <!-- left panel -->
+      <div class="bg-white border border-gray-200 rounded-xl shadow-card p-8" data-fade style="--delay:.2s">
+        <!-- media -->
+        <div class="image-wrapper mx-auto relative rounded-md overflow-hidden border-2 border-primary-10 mb-6">
+          <video autoplay id="video" muted
+            poster="https://img.freepik.com/free-vector/group-young-people-posing-photo_52683-18824.jpg"></video>
+          <img id="photo" src="" alt="preview">
+          <canvas id="canvas" style="display:none"></canvas>
+        </div>
+
+        <!-- buttons -->
+        <div class="flex justify-center gap-4">
+          <button id="uload" type="button"
+            class="inline-flex items-center gap-2 px-6 py-2.5 font-semibold rounded-md text-white bg-primary hover:bg-primary/90 active:bg-primary/95 transition-transform transform-gpu hover:-translate-y-0.5">
+            <!-- Upload icon (Heroicons arrow-up-tray) -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M3 15.75v2.25A2.25 2.25 0 005.25 20h13.5A2.25 2.25 0 0021 18v-2.25M6.75 9L12 3.75 17.25 9M12 3.75V16.5" />
+            </svg>
+            Upload
+          </button>
+
+          <button id="send" type="button"
+            class="inline-flex items-center gap-2 px-6 py-2.5 font-semibold rounded-md text-white bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 transition-transform transform-gpu hover:-translate-y-0.5">
+            <!-- Magic-wand (Heroicons sparkles) -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+              viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M12 3v3m0 12v3m9-9h-3M6 12H3m12.364-6.364l2.121 2.121M6.515 17.485l2.121 2.121m0-12.121L6.515 6.515M17.485 17.485l-2.121 2.121" />
+            </svg>
+            Predict
+          </button>
+        </div>
+
+        <!-- hidden inputs -->
+        <input type="hidden" id="url" value="../predict">
+        <input type="file" id="fileinput" hidden>
+      </div>
+
+      <!-- results -->
+      <div class="bg-white border border-gray-200 rounded-xl shadow-card p-8" data-fade style="--delay:.3s">
+        <h2 class="text-lg font-semibold text-center mb-5">Prediction Results</h2>
+
+        <div class="grid gap-6 md:grid-cols-5">
+          <!-- image result -->
+          <div class="md:col-span-2">
+            <div class="result-box flex items-center justify-center border border-gray-200 rounded-md p-4">
+              <div class="res-part2 w-full text-center"></div>
+            </div>
+          </div>
+
+          <!-- json result -->
+          <div class="md:col-span-3">
+            <div class="result-box border border-gray-200 rounded-md p-4">
+              <pre class="jsonRes m-0 text-xs whitespace-pre-wrap"></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- corner logo -->
+  <img class="logo fixed right-8 bottom-8 w-16 opacity-80 hover:opacity-100 hover:scale-105 transition"
+    src="data:image/png;base64, … same base64 …" alt="logo">
+
+  <!-- scripts -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+  <script>
+    /* ---------------- JS: identical to earlier, just slimmed comments ---------------- */
+    const $loader = $("#loading"),
+          $video  = $("#video"),
+          $photo  = $("#photo"),
+          $canvas = $("#canvas")[0],
+          $file   = $("#fileinput");
+    let   baseData = "";
+
+    const toggleLoader = show => show ? $loader.removeClass("hidden") : $loader.addClass("hidden");
+
+    function sendRequest(data){
+      if(!data) return;
+      toggleLoader(true);
+      $.ajax({
+        url: $("#url").val(),
+        method: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({ image: data }),
+        success(res){
+          $(".res-part2").empty();
+          $(".jsonRes").text(JSON.stringify(res[0], null, 2));
+          if(res[1]?.image?.length>100){
+            $(".res-part2").html(`<img class="resp-img" src="data:image/jpeg;base64,${res[1].image}" alt="result">`);
+          }
+        },
+        complete(){ toggleLoader(false); }
+      });
+    }
+
+    $("#send").on("click", ()=> sendRequest(baseData));
+    $("#uload").on("click", ()=> $file.trigger("click"));
+
+    $file.on("change", function(){
+      const [file] = this.files || [];
+      if(!file) return;
+      const reader = new FileReader();
+      reader.onload = e=>{
+        const img = new Image();
+        img.onload = function(){
+          const ctx = $canvas.getContext("2d");
+          $canvas.width = this.width;
+          $canvas.height = this.height;
+          ctx.drawImage(this,0,0);
+          baseData = $canvas.toDataURL("image/jpeg",1).replace(/^data:image.+;base64,/,"");
+        };
+        img.src = e.target.result;
+        $photo.attr("src", e.target.result).show();
+        $video.hide();
+      };
+      reader.readAsDataURL(file);
+    });
+
+    $(document).ready(()=> toggleLoader(false));
+  </script>
+</body>
+</html>
