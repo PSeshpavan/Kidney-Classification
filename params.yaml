@@ -2,7 +2,7 @@ AUGMENTATION: True
 IMAGE_SIZE: [224, 224, 3] # This value is as per the VGG16 model
 BATCH_SIZE: 16 # Set to 16 for quick testing, increase for actual training
 INCLUDE_TOP: False # Set to True for actual training
-EPOCHS: 100 # Set to 1 for quick testing, increase for actual training
+EPOCHS: 10 # Set to 1 for quick testing, increase for actual training
 CLASSES: 4 # Set to 2 for quick testing, increase for actual training
 WEIGHTS: imagenet # Set to 'imagenet' for actual training, None for quick testing
 LEARNING_RATE: 0.01 # Set to 0.01 for quick testing, adjust for actual training

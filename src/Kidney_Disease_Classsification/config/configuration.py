@@ -1,7 +1,7 @@
 from Kidney_Disease_Classsification.constants import *
 from Kidney_Disease_Classsification.utils.common import read_yaml, create_directories
-from Kidney_Disease_Classsification.entity.config_entity import DataIngestionConfig, PrepareBaseModelConfig
-
+from Kidney_Disease_Classsification.entity.config_entity import DataIngestionConfig, PrepareBaseModelConfig, TrainingConfig
+import os
 
 class ConfigurationManager:
     def __init__(self, config_file_path:str = CONFIG_FILE_PATH, params_file_path:str = PARAMS_FILE_PATH):
@@ -40,3 +40,26 @@ class ConfigurationManager:
         )
         
         return prepare_base_model_config
+
+    def get_training_config(self) -> TrainingConfig:
+        training = self.config.training
+        base_model = self.config.model
+        params = self.params
+        training_data = os.path.join(self.config.data_ingestion.unzip_dir, "CT-KIDNEY-DATASET-Normal-Cyst-Tumor-Stone")
+        create_directories([
+            Path(training.root_dir)
+        ])
+        
+        
+        training_config = TrainingConfig(
+            root_dir=Path(training.root_dir),
+            trained_model_path=Path(training.trained_model_path),
+            updated_base_model_path=Path(base_model.updated_base_model_path),
+            training_data=Path(training_data),
+            params_epochs=params.EPOCHS,
+            params_batch_size=params.BATCH_SIZE,
+            params_is_augmentation=params.AUGMENTATION,
+            params_image_size=params.IMAGE_SIZE
+        )
+        
+        return training_config
