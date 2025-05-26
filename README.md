@@ -19,18 +19,11 @@
 
 ### STEPS:
 
-**Clone the repository**
-
-```bash
-git clone https://github.com/krishnaik06/Kidney-Disease-Classification-Deep-Learning-Project
-cd Kidney-Disease-Classification-Deep-Learning-Project
-```
-
 **STEP 01 - Create a conda environment after opening the repository**
 
 ```bash
-conda create -n cnncls python=3.8 -y
-conda activate cnncls
+conda create -n env_name python=3.12 -y
+conda activate env_name
 ```
 
 **STEP 02 - Install the requirements**
@@ -64,12 +57,12 @@ mlflow ui
 
 [Dagshub](https://dagshub.com/)
 
-Example command to run with MLflow tracking on Dagshub:
+These are the environment variables you need to setup in your .env file:
 
 ```bash
-MLFLOW_TRACKING_URI=https://dagshub.com/entbappy/Kidney-Disease-Classification-MLflow-DVC.mlflow \
-MLFLOW_TRACKING_USERNAME=entbappy \
-MLFLOW_TRACKING_PASSWORD=6824692c47a369aa6f9eac5b10041d5c8edbcef0 \
+MLFLOW_TRACKING_URI=
+MLFLOW_TRACKING_USERNAME=
+MLFLOW_TRACKING_PASSWORD=
 python script.py
 ```
 

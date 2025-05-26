@@ -1,6 +1,6 @@
 from Kidney_Disease_Classsification.constants import *
 from Kidney_Disease_Classsification.utils.common import read_yaml, create_directories
-from Kidney_Disease_Classsification.entity.config_entity import DataIngestionConfig, PrepareBaseModelConfig, TrainingConfig
+from Kidney_Disease_Classsification.entity.config_entity import DataIngestionConfig, PrepareBaseModelConfig, TrainingConfig, EvaluationConfig
 import os
 
 class ConfigurationManager:
@@ -63,3 +63,16 @@ class ConfigurationManager:
         )
         
         return training_config
+    
+    
+    def get_evaluation_config(self) -> EvaluationConfig:
+        eval_config = EvaluationConfig(
+            path_to_model="artifacts/training/trained_model.keras",
+            training_data="artifacts/data_ingestion/CT-KIDNEY-DATASET-Normal-Cyst-Tumor-Stone",
+            all_params=self.params,
+            mlflow_uri="https://dagshub.com/PSeshpavan/Kidney-Classification.mlflow",
+            params_image_size=self.params.IMAGE_SIZE,
+            params_batch_size=self.params.BATCH_SIZE
+        )
+        
+        return eval_config
