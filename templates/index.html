@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Object Classification • Demo</title>
+  <title>Kidney Disease Classification • Demo</title>
 
   <!-- Inter font -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -58,7 +58,7 @@
     <!-- heading -->
     <header class="text-center mb-10" data-fade style="--delay:.1s">
       <h1 class="text-2xl sm:text-3xl font-bold text-[#1b2d6b]">
-        Object Classification Demo
+        Kidney Disease Classification Demo
       </h1>
       <p class="text-gray-500 mt-2">
         Upload an image or capture a frame, then click <strong>Predict</strong>.
@@ -111,17 +111,10 @@
         <h2 class="text-lg font-semibold text-center mb-5">Prediction Results</h2>
 
         <div class="grid gap-6 md:grid-cols-5">
-          <!-- image result -->
-          <div class="md:col-span-2">
-            <div class="result-box flex items-center justify-center border border-gray-200 rounded-md p-4">
-              <div class="res-part2 w-full text-center"></div>
-            </div>
-          </div>
-
           <!-- json result -->
           <div class="md:col-span-3">
-            <div class="result-box border border-gray-200 rounded-md p-4">
-              <pre class="jsonRes m-0 text-xs whitespace-pre-wrap"></pre>
+            <div class="result-box w-full rounded-md p-4">
+              <pre class="jsonRes m-0 text-xl whitespace-pre-wrap"></pre>
             </div>
           </div>
         </div>
@@ -129,9 +122,6 @@
     </section>
   </main>
 
-  <!-- corner logo -->
-  <img class="logo fixed right-8 bottom-8 w-16 opacity-80 hover:opacity-100 hover:scale-105 transition"
-    src="data:image/png;base64, … same base64 …" alt="logo">
 
   <!-- scripts -->
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
@@ -157,7 +147,7 @@
         data: JSON.stringify({ image: data }),
         success(res){
           $(".res-part2").empty();
-          $(".jsonRes").text(JSON.stringify(res[0], null, 2));
+          $(".jsonRes").text(res.result ?? JSON.stringify(res, null, 2));
           if(res[1]?.image?.length>100){
             $(".res-part2").html(`<img class="resp-img" src="data:image/jpeg;base64,${res[1].image}" alt="result">`);
           }

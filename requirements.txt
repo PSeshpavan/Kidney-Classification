@@ -13,8 +13,8 @@ ensure
 joblib
 types-PyYAML
 scipy
-Flask
-Flask-Cors
+flask
+flask-cors
 gdown
 python-dotenv
 

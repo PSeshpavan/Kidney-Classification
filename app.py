@@ -1,13 +1,13 @@
-from flask import FLask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template
 import os
 from flask_cors import CORS, cross_origin
-from Kidney_Disease_Classsification.constants import decodeImage
+from Kidney_Disease_Classsification.utils.common import decodeImage
 from Kidney_Disease_Classsification.pipeline.prediction import PredictionPipeline
 
 os.putenv('LANG', 'en_US.UTF-8')
 os.putenv('LC_ALL', 'en_US.UTF-8')
 
-app = FLask(__name__)
+app = Flask(__name__)
 CORS(app)
 
 class ClientApp:
@@ -37,7 +37,8 @@ def predictRoute():
     image = request.json['image']
     decodeImage(image, clApp.filename)
     result = clApp.classifier.predict()
-    return jsonify(result)
+    first = result[0]
+    return {"result": first["image"]}
 
 
 if __name__ == "__main__":
